@@ -312,7 +312,7 @@ impl<'s> ParsedArg<'s> {
     }
 
     /// Treat as a long-flag
-    pub fn to_long(&self) -> Option<(Result<&str, &OsStr>, Option<&OsStr>)> {
+    pub fn to_long(&self) -> Option<(Result<&'s str, &'s OsStr>, Option<&'s OsStr>)> {
         let raw = self.inner;
         let remainder = raw.strip_prefix("--")?;
         if remainder.is_empty() {
@@ -335,7 +335,7 @@ impl<'s> ParsedArg<'s> {
     }
 
     /// Treat as a short-flag
-    pub fn to_short(&self) -> Option<ShortFlags<'_>> {
+    pub fn to_short(&self) -> Option<ShortFlags<'s>> {
         if let Some(remainder_os) = self.inner.strip_prefix("-") {
             if remainder_os.starts_with("-") {
                 None
@@ -358,21 +358,21 @@ impl<'s> ParsedArg<'s> {
     /// Treat as a value
     ///
     /// **NOTE:** May return a flag or an escape.
-    pub fn to_value_os(&self) -> &OsStr {
+    pub fn to_value_os(&self) -> &'s OsStr {
         self.inner
     }
 
     /// Treat as a value
     ///
     /// **NOTE:** May return a flag or an escape.
-    pub fn to_value(&self) -> Result<&str, &OsStr> {
+    pub fn to_value(&self) -> Result<&'s str, &'s OsStr> {
         self.inner.to_str().ok_or(self.inner)
     }
 
     /// Safely print an argument that may contain non-UTF8 content
     ///
     /// This may perform lossy conversion, depending on the platform. If you would like an implementation which escapes the path please use Debug instead.
-    pub fn display(&self) -> impl std::fmt::Display + '_ {
+    pub fn display(&self) -> impl std::fmt::Display + 's {
         self.inner.to_string_lossy()
     }
 }
